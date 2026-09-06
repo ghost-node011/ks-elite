@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Calendar, Tag } from "lucide-react";
 import Layout from "../components/Layout";
@@ -13,6 +13,10 @@ const CATEGORY_IMAGES = {
   Courts: "/images/blog/courts.jpg",
   Laws: "/images/blog/laws.jpg",
   Divorce: "/images/blog/divorce.jpg",
+  Casteism: "/images/blog/laws.jpg",
+  "Minority Educational Institutions": "/images/blog/laws.jpg",
+  Writs: "/images/blog/courts.jpg",
+  "Intellectual Property": "/images/blog/technology.jpg",
 };
 
 function coverImage(post) {
@@ -26,6 +30,8 @@ function formatDate(iso) {
 export default function Blog() {
   const [posts, setPosts] = useState(null);
   const [error, setError] = useState("");
+  const [activeCategory, setActiveCategory] = useState(null);
+  const listTopRef = useRef(null);
 
   useEffect(() => {
     fetchPublishedPosts()
@@ -33,7 +39,20 @@ export default function Blog() {
       .catch(() => setError("Couldn't load posts right now — please check back shortly."));
   }, []);
 
-  const [featured, ...rest] = posts || [];
+  const selectCategory = (cat) => {
+    setActiveCategory(cat);
+    listTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const filteredPosts = activeCategory ? (posts || []).filter((p) => p.category === activeCategory) : posts || [];
+  const [featured, ...rest] = filteredPosts;
+
+  const categoryCounts = (posts || []).reduce((acc, p) => {
+    acc[p.category] = (acc[p.category] || 0) + 1;
+    return acc;
+  }, {});
+
+  const mostRead = [...(posts || [])].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 4);
 
   return (
     <Layout>
@@ -54,6 +73,46 @@ export default function Blog() {
 
           {!error && posts?.length === 0 && (
             <p className="text-sm text-[var(--fg-muted)] text-center">No posts published yet — check back soon.</p>
+          )}
+
+          {posts?.length > 0 && (
+            <>
+              <div ref={listTopRef} className="flex items-center justify-between mb-8 scroll-mt-28">
+                <h2 className="font-display font-bold text-xl uppercase tracking-wide">Latest Articles</h2>
+              </div>
+
+              <div className="flex flex-wrap gap-2 mb-10">
+                <button
+                  onClick={() => selectCategory(null)}
+                  className="rounded-full px-4 py-2 text-xs font-mono uppercase tracking-wide border transition-colors"
+                  style={
+                    !activeCategory
+                      ? { background: "var(--accent)", borderColor: "var(--accent)", color: "var(--color-navy)" }
+                      : { borderColor: "var(--line)", color: "var(--fg-muted)" }
+                  }
+                >
+                  All ({posts.length})
+                </button>
+                {Object.entries(categoryCounts).map(([cat, count]) => (
+                  <button
+                    key={cat}
+                    onClick={() => selectCategory(cat)}
+                    className="rounded-full px-4 py-2 text-xs font-mono uppercase tracking-wide border transition-colors"
+                    style={
+                      activeCategory === cat
+                        ? { background: "var(--accent)", borderColor: "var(--accent)", color: "var(--color-navy)" }
+                        : { borderColor: "var(--line)", color: "var(--fg-muted)" }
+                    }
+                  >
+                    {cat} ({count})
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+
+          {!featured && activeCategory && (
+            <p className="text-sm text-[var(--fg-muted)] mb-16">No posts in this category yet.</p>
           )}
 
           {featured && (
@@ -133,6 +192,59 @@ export default function Blog() {
                 ))}
               </div>
             </>
+          )}
+
+          {posts?.length > 0 && (
+            <div className="grid lg:grid-cols-[1fr_320px] gap-16 mt-24 pt-16 border-t" style={{ borderColor: "var(--line)" }}>
+              <div>
+                <h2 className="font-display font-bold text-xl uppercase tracking-wide mb-8">Most Read</h2>
+                <div className="flex flex-col gap-6">
+                  {mostRead.map((post) => (
+                    <Link key={post.id} to={`/blog/${post.slug}`} className="group flex gap-5 items-start">
+                      <div className="w-28 sm:w-36 aspect-[4/3] shrink-0 rounded-xl overflow-hidden">
+                        <img
+                          src={coverImage(post)}
+                          alt={post.title}
+                          loading="lazy"
+                          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                        />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-3 mb-1.5 font-mono text-[11px] uppercase tracking-wide text-[var(--fg-muted)]">
+                          <span style={{ color: "var(--accent)" }}>{post.category}</span>
+                          <span>{formatDate(post.date)}</span>
+                        </div>
+                        <h3 className="font-display font-semibold text-base leading-snug group-hover:text-[var(--accent)] transition-colors">
+                          {post.title}
+                        </h3>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h2 className="font-display font-bold text-xl uppercase tracking-wide mb-8">Categories</h2>
+                <div className="flex flex-col">
+                  {Object.entries(categoryCounts).map(([cat, count]) => (
+                    <button
+                      key={cat}
+                      onClick={() => selectCategory(cat)}
+                      className="flex items-center justify-between py-3 border-b text-left hover:text-[var(--accent)] transition-colors"
+                      style={{ borderColor: "var(--line)" }}
+                    >
+                      <span className="font-mono text-[11px] uppercase tracking-wide">{cat}</span>
+                      <span
+                        className="w-6 h-6 flex items-center justify-center rounded-full text-[10px] font-mono shrink-0"
+                        style={{ background: "var(--color-navy)", color: "var(--color-gold-soft)" }}
+                      >
+                        {count}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           )}
 
           <NewsletterSubscribe />

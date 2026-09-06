@@ -232,33 +232,57 @@
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 1.5rem;
-  margin: 2rem 0 0.75rem;
+  margin: 2.5rem 0 0.85rem;
 }
 .prose-blog h3 {
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 1.2rem;
-  margin: 1.5rem 0 0.5rem;
+  margin: 1.75rem 0 0.5rem;
 }
 .prose-blog p {
-  margin: 0 0 1rem;
+  margin: 0 0 1.15rem;
+  font-size: 1.05rem;
+  line-height: 1.85;
+}
+/* legacy content marks subheadings as a lone <strong> in its own paragraph —
+   render those like a proper subheading instead of an inline bold word. */
+.prose-blog p:has(> strong:only-child):not(:has(> strong ~ *)) {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.15rem;
+  margin: 2.25rem 0 0.75rem;
+  color: var(--accent);
+}
+.prose-blog p:has(> strong:only-child):not(:has(> strong ~ *)) strong {
+  font-weight: 700;
 }
 .prose-blog ul,
 .prose-blog ol {
-  margin: 0 0 1rem;
-  padding-left: 1.4rem;
+  margin: 0 0 1.15rem;
+  padding-left: 1.5rem;
 }
 .prose-blog li {
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.05rem;
+  line-height: 1.8;
 }
 .prose-blog img {
   max-width: 100%;
   border-radius: 0.75rem;
-  margin: 1.5rem 0;
+  margin: 2rem 0;
 }
 .prose-blog a {
   color: var(--accent);
   text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.prose-blog blockquote {
+  margin: 1.75rem 0;
+  padding: 0.25rem 0 0.25rem 1.25rem;
+  border-left: 3px solid var(--accent);
+  font-style: italic;
+  color: var(--fg-muted);
 }
 
 /* ornamental divider */
