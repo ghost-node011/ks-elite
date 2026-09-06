@@ -4,6 +4,7 @@ import Layout from "../components/Layout";
 import PageHeader from "../components/PageHeader";
 import Reveal from "../components/Reveal";
 import { submitInternshipApplication } from "../lib/api";
+import { isValidEmail, isValidPhone } from "../lib/validators";
 
 const WHATSAPP_NUMBER = "919891967200";
 
@@ -39,6 +40,7 @@ export default function Internship() {
   const [form, setForm] = useState(initialForm);
   const [resume, setResume] = useState(null);
   const [resumeError, setResumeError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const update = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
@@ -67,6 +69,12 @@ export default function Internship() {
 
   const submit = (e) => {
     e.preventDefault();
+
+    const errors = {};
+    if (!isValidEmail(form.email)) errors.email = "Please enter a valid email address.";
+    if (!isValidPhone(form.contact)) errors.contact = "Please enter a valid contact number.";
+    setFieldErrors(errors);
+    if (Object.keys(errors).length) return;
 
     const formData = new FormData();
     Object.entries(form).forEach(([key, value]) => formData.append(key, value));
@@ -158,9 +166,11 @@ export default function Internship() {
               <div className="grid sm:grid-cols-2 gap-4">
                 <Field label="Email">
                   <input required type="email" placeholder="Enter your email" value={form.email} onChange={update("email")} className={inputClass} style={inputStyle} />
+                  {fieldErrors.email && <p className="text-xs text-red-500 mt-1">{fieldErrors.email}</p>}
                 </Field>
                 <Field label="Contact Number">
                   <input required type="tel" placeholder="Enter your number" value={form.contact} onChange={update("contact")} className={inputClass} style={inputStyle} />
+                  {fieldErrors.contact && <p className="text-xs text-red-500 mt-1">{fieldErrors.contact}</p>}
                 </Field>
               </div>
 

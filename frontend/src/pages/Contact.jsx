@@ -4,6 +4,7 @@ import Layout from "../components/Layout";
 import PageHeader from "../components/PageHeader";
 import Reveal from "../components/Reveal";
 import { submitLead } from "../lib/api";
+import { isValidPhone } from "../lib/validators";
 
 const OFFICES = [
   "45/1109, 1st Floor, DDA Flats, Kalkaji, Delhi-110019",
@@ -18,11 +19,17 @@ const WHATSAPP_NUMBER = "919891967200";
 
 export default function Contact() {
   const [form, setForm] = useState({ name: "", phone: "", matter: "", message: "" });
+  const [phoneError, setPhoneError] = useState("");
 
   const update = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
   const submit = (e) => {
     e.preventDefault();
+    if (!isValidPhone(form.phone)) {
+      setPhoneError("Please enter a valid phone number.");
+      return;
+    }
+    setPhoneError("");
     submitLead("contact", form);
     const text = `New consultation request via website:%0A%0AName: ${encodeURIComponent(form.name)}%0APhone: ${encodeURIComponent(
       form.phone
@@ -64,6 +71,7 @@ export default function Contact() {
                   style={{ borderColor: "var(--line)", background: "var(--card)" }}
                 />
               </div>
+              {phoneError && <p className="text-xs text-red-500 -mt-2">{phoneError}</p>}
 
               <input
                 value={form.matter}

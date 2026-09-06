@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Mail, Send } from "lucide-react";
 import { subscribeToNewsletter } from "../lib/api";
+import { isValidEmail } from "../lib/validators";
 
 export default function NewsletterSubscribe() {
   const [email, setEmail] = useState("");
@@ -9,6 +10,11 @@ export default function NewsletterSubscribe() {
 
   const submit = async (e) => {
     e.preventDefault();
+    if (!isValidEmail(email)) {
+      setStatus("error");
+      setError("Please enter a valid email address.");
+      return;
+    }
     setStatus("sending");
     setError("");
     try {
