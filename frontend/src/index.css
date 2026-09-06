@@ -247,15 +247,24 @@
 }
 /* legacy content marks subheadings as a lone <strong> in its own paragraph —
    render those like a proper subheading instead of an inline bold word. */
-.prose-blog p:has(> strong:only-child):not(:has(> strong ~ *)) {
+.prose-blog p:has(> strong:only-child):not(:has(> strong ~ *)),
+.prose-blog li:has(> strong:only-child):not(:has(> strong ~ *)) {
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 1.15rem;
   margin: 2.25rem 0 0.75rem;
   color: var(--accent);
 }
-.prose-blog p:has(> strong:only-child):not(:has(> strong ~ *)) strong {
+.prose-blog p:has(> strong:only-child):not(:has(> strong ~ *)) strong,
+.prose-blog li:has(> strong:only-child):not(:has(> strong ~ *)) strong {
   font-weight: 700;
+}
+/* a bare bold <li> is being used as a pseudo-heading, not a real list item —
+   strip the bullet/indent so it reads like the heading above, not a bullet. */
+.prose-blog li:has(> strong:only-child):not(:has(> strong ~ *)) {
+  display: block;
+  list-style: none;
+  margin-left: -1.5rem;
 }
 .prose-blog ul,
 .prose-blog ol {
