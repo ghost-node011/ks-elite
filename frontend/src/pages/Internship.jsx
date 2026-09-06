@@ -42,10 +42,21 @@ export default function Internship() {
 
   const update = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
-  const handleResumeChange = (e) => {
+  const handleResumeChange = async (e) => {
     const file = e.target.files?.[0] ?? null;
-    if (file && file.type !== "application/pdf") {
-      setResumeError("Please upload a PDF file.");
+    if (!file) {
+      setResumeError("");
+      setResume(null);
+      return;
+    }
+
+    // file.type/extension is inferred from the filename, not the content — a
+    // .docx renamed to .pdf still reports as "application/pdf" here, so the
+    // only reliable check is the file's own magic-number header.
+    const header = new Uint8Array(await file.slice(0, 5).arrayBuffer());
+    const isPdf = String.fromCharCode(...header) === "%PDF-";
+    if (!isPdf) {
+      setResumeError("Please upload a valid PDF file.");
       setResume(null);
       e.target.value = "";
       return;
