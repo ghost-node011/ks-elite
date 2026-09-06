@@ -1,9 +1,21 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Calendar, Clock, Linkedin, Link2, Twitter } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, Link2 } from "lucide-react";
 import Layout from "../components/Layout";
 import Reveal from "../components/Reveal";
 import { fetchPostBySlug, fetchPublishedPosts, resolveImageUrl } from "../lib/api";
+
+// lucide-react dropped brand/logo icons — same workaround as Footer.jsx's LinkedinIcon.
+const LinkedinIcon = (props) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+    <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.15 1.45-2.15 2.94v5.67H9.34V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45z" />
+  </svg>
+);
+const XIcon = (props) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
 
 function formatDate(iso) {
   return new Date(iso).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
@@ -94,7 +106,7 @@ export default function BlogPost() {
                       className="hover:text-[var(--accent)] transition-colors"
                       aria-label="Share on X"
                     >
-                      <Twitter size={16} />
+                      <XIcon width={16} height={16} />
                     </a>
                     <a
                       href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
@@ -103,7 +115,7 @@ export default function BlogPost() {
                       className="hover:text-[var(--accent)] transition-colors"
                       aria-label="Share on LinkedIn"
                     >
-                      <Linkedin size={16} />
+                      <LinkedinIcon width={16} height={16} />
                     </a>
                     <button onClick={copyLink} className="hover:text-[var(--accent)] transition-colors" aria-label="Copy link">
                       <Link2 size={16} />
@@ -162,7 +174,7 @@ export default function BlogPost() {
                               className="flex items-center gap-1 text-xs hover:text-[var(--accent)] transition-colors"
                               style={{ color: "var(--accent)" }}
                             >
-                              <Linkedin size={12} />
+                              <LinkedinIcon width={12} height={12} />
                               LinkedIn
                             </a>
                           )}
